@@ -89,4 +89,27 @@ public class DateUtils {
 
     }
 
+    /**
+     *
+     * @param maxDay
+     * @param initDate
+     * @param currentDate
+     * @return the percentage of reach the maxDay based on the currentDate and the initDate.
+     * @throws UnexpectedException
+     */
+    public static long calcProgress(String maxDay, String initDate, String currentDate) throws UnexpectedException {
+        try {
+            long maxDayMill = DATE_FORMAT.parse(maxDay).getTime();
+            long minDayMill = DATE_FORMAT.parse(initDate).getTime();
+
+            long maxProgress = maxDayMill - minDayMill;
+
+            long currentProgress = DATE_FORMAT.parse(currentDate).getTime() - minDayMill;
+
+            return (currentProgress * 100L) / maxProgress;
+        } catch (ParseException e) {
+            throw new UnexpectedException(e.getMessage());
+        }
+    }
+
 }

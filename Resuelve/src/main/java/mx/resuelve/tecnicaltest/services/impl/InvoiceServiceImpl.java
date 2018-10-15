@@ -1,6 +1,5 @@
 package mx.resuelve.tecnicaltest.services.impl;
 
-import java.text.ParseException;
 import mx.resuelve.tecnicaltest.exceptions.ClientException;
 import mx.resuelve.tecnicaltest.exceptions.InvalidInputException;
 import mx.resuelve.tecnicaltest.exceptions.TooMuchInvoiceException;
@@ -65,7 +64,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         while (DateUtils.beforeThan(this.currentDate, maxDay)) {
             totalInvoices += binarySearch(id, finalDate);
             totalRequest++;
-            System.out.println("Progress: " + calcProgress() + "%");
+            System.out.println("Progress: " + DateUtils.calcProgress(maxDay, this.initDate, currentDate) + "%");
         }
 
         return new Response(totalInvoices, totalRequest);
@@ -95,26 +94,6 @@ public class InvoiceServiceImpl implements InvoiceService {
             return binarySearch(id, middleDate);
         }
 
-    }
-
-    /**
-     *
-     * @return the percentage of the current process based on the currentDate and the final date.
-     * @throws UnexpectedException
-     */
-    private long calcProgress() throws UnexpectedException {
-        try {
-            long maxDayMill = DateUtils.DATE_FORMAT.parse(maxDay).getTime();
-            long minDayMill = DateUtils.DATE_FORMAT.parse(initDate).getTime();
-
-            long maxProgress = maxDayMill - minDayMill;
-
-            long currentProgress = DateUtils.DATE_FORMAT.parse(currentDate).getTime() - minDayMill;
-
-            return (currentProgress * 100L) / maxProgress;
-        } catch (ParseException e) {
-            throw new UnexpectedException(e.getMessage());
-        }
     }
 
 }
