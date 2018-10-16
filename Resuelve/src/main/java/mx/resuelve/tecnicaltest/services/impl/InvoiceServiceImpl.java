@@ -26,9 +26,21 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoiceRestService = InvoiceRestServiceImpl.getInstance();
     }
 
+    private InvoiceServiceImpl(InvoiceRestService invoiceRestService) {
+        this.invoiceRestService = invoiceRestService;
+    }
+
     public static InvoiceService getInstance() {
         if (instance == null) {
             instance = new InvoiceServiceImpl();
+        }
+
+        return instance;
+    }
+
+    public static InvoiceService getInstance(InvoiceRestService invoiceRestService) {
+        if (instance == null) {
+            instance = new InvoiceServiceImpl(invoiceRestService);
         }
 
         return instance;

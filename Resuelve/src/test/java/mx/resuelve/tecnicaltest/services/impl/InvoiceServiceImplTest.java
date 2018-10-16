@@ -1,67 +1,103 @@
 package mx.resuelve.tecnicaltest.services.impl;
 
+import mx.resuelve.tecnicaltest.exceptions.ClientException;
+import mx.resuelve.tecnicaltest.exceptions.InvalidInputException;
+import mx.resuelve.tecnicaltest.exceptions.TooMuchInvoiceException;
+import mx.resuelve.tecnicaltest.exceptions.UnexpectedException;
 import mx.resuelve.tecnicaltest.pojos.Response;
+import mx.resuelve.tecnicaltest.services.InvoiceRestService;
 import mx.resuelve.tecnicaltest.services.InvoiceService;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.mockito.Mockito;
 
 /**
  *
  * @author gibran
  */
 public class InvoiceServiceImplTest {
-    
+
     public InvoiceServiceImplTest() {
     }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
+
+    private InvoiceRestService invoiceRestService;
+
     @Before
     public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
-
-    /**
-     * Test of getInstance method, of class InvoiceServiceImpl.
-     */
-    @Test
-    public void testGetInstance() {
-        System.out.println("getInstance");
-        InvoiceService expResult = null;
-        InvoiceService result = InvoiceServiceImpl.getInstance();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        invoiceRestService = Mockito.mock(InvoiceRestService.class);
     }
 
     /**
      * Test of count method, of class InvoiceServiceImpl.
+     *
+     * @throws mx.resuelve.tecnicaltest.exceptions.ClientException
+     * @throws mx.resuelve.tecnicaltest.exceptions.UnexpectedException
+     * @throws mx.resuelve.tecnicaltest.exceptions.TooMuchInvoiceException
+     * @throws mx.resuelve.tecnicaltest.exceptions.InvalidInputException
      */
     @Test
-    public void testCount() throws Exception {
+    public void testCount() throws ClientException, UnexpectedException,
+            TooMuchInvoiceException, InvalidInputException {
         System.out.println("count");
-        String id = "";
-        String initDate = "";
-        String finalDate = "";
-        InvoiceServiceImpl instance = null;
-        Response expResult = null;
-        Response result = instance.count(id, initDate, finalDate);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String id = "a55f50b5-886b-4846-95c2-c3ac4cc250a7";
+        String initDate = "2017-01-01";
+        String finalDate = "2018-01-01";
+        InvoiceService invoiceService = InvoiceServiceImpl.getInstance(invoiceRestService);
+        int totalInvoicesExpect = 50;
+        int totalRequestsExpect = 1;
+        Mockito.when(invoiceRestService.request(id, initDate, finalDate)).thenReturn(50);
+        Response result = invoiceService.count(id, initDate, finalDate);
+        assertEquals(totalInvoicesExpect, result.getTotalInvoices());
+        assertEquals(totalRequestsExpect, result.getTotalRequest());
     }
-    
+
+    /**
+     * Test of count method, of class InvoiceServiceImpl.
+     *
+     * trying to give the final date less than the initial
+     *
+     * @throws mx.resuelve.tecnicaltest.exceptions.ClientException
+     * @throws mx.resuelve.tecnicaltest.exceptions.UnexpectedException
+     * @throws mx.resuelve.tecnicaltest.exceptions.TooMuchInvoiceException
+     * @throws mx.resuelve.tecnicaltest.exceptions.InvalidInputException
+     */
+    @Test
+    public void testCountFinalDateLessThanInitDate() throws ClientException, UnexpectedException,
+            TooMuchInvoiceException, InvalidInputException {
+        System.out.println("count");
+        String id = "a55f50b5-886b-4846-95c2-c3ac4cc250a7";
+        String initDate = "2017-01-02";
+        String finalDate = "2018-01-01";
+        InvoiceService invoiceService = InvoiceServiceImpl.getInstance(invoiceRestService);
+        int totalInvoicesExpect = 0;
+        int totalRequestsExpect = 1;
+        Mockito.when(invoiceRestService.request(id, initDate, finalDate)).thenReturn(0);
+        Response result = invoiceService.count(id, initDate, finalDate);
+        assertEquals(totalInvoicesExpect, result.getTotalInvoices());
+        assertEquals(totalRequestsExpect, result.getTotalRequest());
+    }
+
+    /**
+     * Test of count method, of class InvoiceServiceImpl.
+     *
+     * trying to give wrong inputs
+     *
+     * @throws mx.resuelve.tecnicaltest.exceptions.ClientException
+     * @throws mx.resuelve.tecnicaltest.exceptions.UnexpectedException
+     * @throws mx.resuelve.tecnicaltest.exceptions.TooMuchInvoiceException
+     * @throws mx.resuelve.tecnicaltest.exceptions.InvalidInputException
+     */
+    @Test(expected = InvalidInputException.class)
+    public void testCountWrongInputs() throws ClientException, UnexpectedException,
+            TooMuchInvoiceException, InvalidInputException {
+        System.out.println("count");
+        String id = "a55f50b5-886b-4846-95c2-c3ac4cc250a7";
+        String initDate = "This is incorect";
+        String finalDate = "20180101";
+        InvoiceService invoiceService = InvoiceServiceImpl.getInstance(invoiceRestService);
+        Mockito.when(invoiceRestService.request(id, initDate, finalDate)).thenReturn(50);
+        invoiceService.count(id, initDate, finalDate);
+    }
+
 }
