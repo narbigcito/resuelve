@@ -96,7 +96,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
         String middleDate = DateUtils.getMiddleDateAsString(currentDate, finalDate);
 
-        try {
+        try {            
             int invoices = invoiceRestService.request(id, currentDate, finalDate);
             currentDate = DateUtils.addDays(finalDate, 1);
 

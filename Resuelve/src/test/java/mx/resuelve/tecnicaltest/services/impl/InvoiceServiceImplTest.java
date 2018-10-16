@@ -45,8 +45,9 @@ public class InvoiceServiceImplTest {
         String finalDate = "2018-01-01";
         InvoiceService invoiceService = InvoiceServiceImpl.getInstance(invoiceRestService);
         int totalInvoicesExpect = 50;
-        int totalRequestsExpect = 1;
-        Mockito.when(invoiceRestService.request(id, initDate, finalDate)).thenReturn(50);
+        int totalRequestsExpect = 2;
+        Mockito.when(invoiceRestService.request(id, initDate, finalDate)).thenThrow(new TooMuchInvoiceException());
+        Mockito.when(invoiceRestService.request(id, "2017-07-03", finalDate)).thenReturn(50);
         Response result = invoiceService.count(id, initDate, finalDate);
         assertEquals(totalInvoicesExpect, result.getTotalInvoices());
         assertEquals(totalRequestsExpect, result.getTotalRequest());
